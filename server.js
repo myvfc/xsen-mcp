@@ -14,6 +14,9 @@ const PLAYER_BASE = process.env.XSEN_PLAYER_URL || "https://player.xsen.fun";
 
 let videoDB = [];
 
+app.use(express.static("."));
+
+
 /* ------------------ Load Videos ------------------ */
 async function loadVideos() {
   console.log("📡 Fetching videos.json…");
