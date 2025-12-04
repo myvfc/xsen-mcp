@@ -1,7 +1,6 @@
 {
   "name": "xsen-video-mcp",
   "version": "1.0.0",
-  "description": "XSEN-only video MCP for Boomer Bot",
   "main": "server.js",
   "type": "module",
   "scripts": {
