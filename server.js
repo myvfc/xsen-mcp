@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 const VIDEOS_URL =
   process.env.VIDEOS_URL ||
   "https://raw.githubusercontent.com/myvfc/video-db/main/videos.json";
@@ -237,8 +237,8 @@ app.post("/mcp", requireAuth, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 XSEN Video MCP running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+console.log(`🚀 XSEN Video MCP running on port ${PORT}`);
 
   setTimeout(() => {
     loadVideos().then(() => {
