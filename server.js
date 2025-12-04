@@ -1,24 +1,20 @@
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const PORT = process.env.PORT || 8080;
-
-// Location of your videos.json repo
 const VIDEOS_URL =
   process.env.VIDEOS_URL ||
   "https://raw.githubusercontent.com/myvfc/video-db/main/videos.json";
 
-// Optional auth for PayMeGPT (leave blank to disable)
 const AUTH_TOKEN = process.env.MCP_AUTH || "";
-
-// XSEN Player base URL (permanent)
 const PLAYER_BASE = process.env.XSEN_PLAYER_URL || "https://player.xsen.fun";
 
-// In-memory DB
 let videoDB = [];
 
-/* ----------------------------- Load Videos ------------------------------- */
+/* ------------------ Load Videos ------------------ */
 async function loadVideos() {
   console.log("📡 Fetching videos.json…");
   try {
@@ -32,12 +28,19 @@ async function loadVideos() {
   }
 }
 
-/* ----------------------------- Express Setup ----------------------------- */
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ---------------------------- Health Check ------------------------------- */
+/* ------------------ Serve manifest.json ------------------ */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.get("/manifest.json", (req, res) => {
+  res.sendFile(path.join(__dirname, "manifest.json"));
+});
+
+/* ------------------ Health ------------------ */
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
@@ -47,21 +50,14 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
+app.get("/health", (req, res) => res.status(200).send("OK"));
 
-/* ------------------------------ HEARTBEAT ------------------------------- */
-/*
-  Railway sleeps containers that have no network output.
-  This heartbeat prints a log entry every 12s and ensures
-  Railway sees continuous activity.
-*/
+/* ------------------ Heartbeat ------------------ */
 setInterval(() => {
   console.log("💓 Heartbeat: XSEN MCP is alive");
 }, 12000);
 
-/* ---------------------------- Auth Middleware ---------------------------- */
+/* ------------------ Auth ------------------ */
 function requireAuth(req, res, next) {
   if (!AUTH_TOKEN) return next();
 
@@ -73,7 +69,7 @@ function requireAuth(req, res, next) {
   return res.status(401).json({ error: "Unauthorized" });
 }
 
-/* --------------------------- Helper: Video ID ---------------------------- */
+/* ------------------ Helpers ------------------ */
 function extractVideoId(url = "") {
   if (!url) return "";
   if (url.includes("v=")) return url.split("v=")[1].split("&")[0];
@@ -81,7 +77,7 @@ function extractVideoId(url = "") {
   return "";
 }
 
-/* --------------------------- Tool: xsen_search --------------------------- */
+/* ------------------ Tool Handler ------------------ */
 async function handleXsenSearch(params) {
   const query = params?.query?.toLowerCase() || "";
   console.log(`🔍 xsen_search: "${query}"`);
@@ -127,8 +123,6 @@ async function handleXsenSearch(params) {
   <iframe
     src="${playerUrl}"
     style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowfullscreen
     loading="lazy"
   ></iframe>
@@ -142,7 +136,7 @@ async function handleXsenSearch(params) {
   return responseText;
 }
 
-/* ----------------------------- JSON-RPC MCP ------------------------------ */
+/* ------------------ JSON-RPC MCP ------------------ */
 app.post("/mcp", requireAuth, async (req, res) => {
   try {
     const { jsonrpc, method, id, params } = req.body || {};
@@ -183,7 +177,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
               name: "xsen_search",
               description:
                 "Search OU Sooners videos and return XSEN embedded players.",
-              inputSchema: {
+              input_schema: {
                 type: "object",
                 properties: {
                   query: {
@@ -238,11 +232,9 @@ app.post("/mcp", requireAuth, async (req, res) => {
   }
 });
 
-/* ------------------------------ Start Server ----------------------------- */
 app.listen(PORT, () => {
   console.log(`🚀 XSEN Video MCP running on port ${PORT}`);
 
-  // Load videos AFTER server binds so Railway healthcheck passes
   setTimeout(() => {
     loadVideos().then(() => {
       console.log("📊 Video DB ready");
