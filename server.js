@@ -25,7 +25,6 @@ const VIDEOS_URL =
   process.env.VIDEOS_URL ||
   "https://raw.githubusercontent.com/myvfc/video-db/main/videos.json";
 
-const AUTH_TOKEN = process.env.MCP_AUTH || "";
 const PLAYER_BASE = process.env.XSEN_PLAYER_URL || "https://player.xsen.fun";
 
 let videoDB = [];
@@ -75,22 +74,7 @@ setInterval(async () => {
   } catch (err) {
     console.log("💓 Keep-alive ping failed (server might be starting)");
   }
-}, 5 * 60 * 1000); // Every 5 minutes
-
-/* -------------------------------------------------------------------------- */
-/*                            AUTH MIDDLEWARE                                  */
-/* -------------------------------------------------------------------------- */
-
-function requireAuth(req, res, next) {
-  if (!AUTH_TOKEN) return next();
-
-  const header = req.headers.authorization || "";
-  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
-
-  if (token === AUTH_TOKEN) return next();
-
-  return res.status(401).json({ error: "Unauthorized" });
-}
+}, 5 * 60 * 1000);
 
 /* -------------------------------------------------------------------------- */
 /*                            HELPER: EXTRACT VIDEO ID                         */
@@ -168,7 +152,7 @@ async function handleXsenSearch(params) {
 /*                                MCP ENDPOINT                                 */
 /* -------------------------------------------------------------------------- */
 
-app.post("/mcp", requireAuth, async (req, res) => {
+app.post("/mcp", async (req, res) => {
   try {
     const { jsonrpc, method, id, params } = req.body || {};
 
@@ -282,4 +266,5 @@ app.listen(PORT, "0.0.0.0", () => {
     });
   }, 2500);
 });
+
 
