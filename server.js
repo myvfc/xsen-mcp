@@ -9,7 +9,7 @@ import fetch from "node-fetch";
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(".")); // <-- REQUIRED so manifest.json is served
+app.use(express.static(".")); // required so manifest.json is served
 
 /* -------------------------------------------------------------------------- */
 /*                          PORT (Railway Compatible)                         */
@@ -68,7 +68,6 @@ app.get("/health", (req, res) => {
 /*                            KEEP-ALIVE HEARTBEAT                             */
 /* -------------------------------------------------------------------------- */
 
-// Self-ping every 5 minutes to prevent Railway sleep
 setInterval(async () => {
   try {
     const response = await fetch(`http://localhost:${PORT}/health`);
@@ -175,8 +174,8 @@ app.post("/mcp", requireAuth, async (req, res) => {
 
     console.log(`🔧 MCP: ${method}`);
 
+    // ---- JSON-RPC VERSION CHECK ----
     if (jsonrpc !== "2.0") {
-      JSON-RPC Check
       return res.json({
         jsonrpc: "2.0",
         id,
@@ -184,6 +183,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
       });
     }
 
+    // ---- INITIALIZE ----
     if (method === "initialize") {
       return res.json({
         jsonrpc: "2.0",
@@ -200,6 +200,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
       return res.status(200).end();
     }
 
+    // ---- LIST TOOLS ----
     if (method === "tools/list") {
       return res.json({
         jsonrpc: "2.0",
@@ -215,7 +216,8 @@ app.post("/mcp", requireAuth, async (req, res) => {
                 properties: {
                   query: {
                     type: "string",
-                    description: "Search phrase (e.g., 'Baker Mayfield highlights')",
+                    description:
+                      "Search phrase (e.g., 'Baker Mayfield highlights')",
                   },
                 },
                 required: ["query"],
@@ -226,6 +228,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
       });
     }
 
+    // ---- CALL TOOL ----
     if (method === "tools/call") {
       const toolName = params?.name;
 
@@ -249,6 +252,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
       });
     }
 
+    // ---- UNKNOWN METHOD ----
     return res.json({
       jsonrpc: "2.0",
       id,
@@ -278,3 +282,4 @@ app.listen(PORT, "0.0.0.0", () => {
     });
   }, 2500);
 });
+
