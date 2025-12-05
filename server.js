@@ -176,6 +176,7 @@ app.post("/mcp", requireAuth, async (req, res) => {
     console.log(`🔧 MCP: ${method}`);
 
     if (jsonrpc !== "2.0") {
+      JSON-RPC Check
       return res.json({
         jsonrpc: "2.0",
         id,
