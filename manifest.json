@@ -2,16 +2,16 @@
   "name": "xsen_video_mcp",
   "version": "1.0.0",
   "type": "server",
-  "api": {
-  "type": "http",
-  "url": "https://xsen-mcp-production.up.railway.app/mcp"
-},
-
   "description": "XSEN-only search tool for OU Sooners video playback",
   "author": "XSEN Network",
   "license": "MIT",
 
   "protocolVersion": "2024-11-05",
+
+  "api": {
+    "type": "http",
+    "url": "https://xsen-mcp-production.up.railway.app/mcp"
+  },
 
   "command": {
     "type": "http",
@@ -43,5 +43,3 @@
     }
   ]
 }
-
- 
