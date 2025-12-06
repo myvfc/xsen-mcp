@@ -88,12 +88,12 @@ function extractVideoId(url = "") {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                        TOOL: xsen_search IMPLEMENTATION                     */
+/*                        TOOL: search-videos IMPLEMENTATION                   */
 /* -------------------------------------------------------------------------- */
 
 async function handleXsenSearch(params) {
   const query = params?.query?.toLowerCase() || "";
-  console.log(`🔍 xsen_search: "${query}"`);
+  console.log(`🔍 search-videos: "${query}"`);
 
   if (!query) {
     return "Give me something to search — a game, season, player, or rivalry.";
@@ -192,7 +192,7 @@ app.post("/mcp", async (req, res) => {
         result: {
           tools: [
             {
-              name: "xsen_search",
+              name: "search-videos",
               description:
                 "Search OU Sooners videos and return XSEN embedded players.",
               input_schema: {
@@ -216,7 +216,7 @@ app.post("/mcp", async (req, res) => {
     if (method === "tools/call") {
       const toolName = params?.name;
 
-      if (toolName !== "xsen_search") {
+      if (toolName !== "search-videos") {
         return res.json({
           jsonrpc: "2.0",
           id,
@@ -266,5 +266,3 @@ app.listen(PORT, "0.0.0.0", () => {
     });
   }, 2500);
 });
-
-
