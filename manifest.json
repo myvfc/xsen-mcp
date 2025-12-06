@@ -6,6 +6,8 @@
   "author": "XSEN Network",
   "license": "MIT",
 
+  "protocolVersion": "2024-11-05",
+
   "command": {
     "type": "http",
     "url": "https://xsen-mcp-production.up.railway.app/mcp"
@@ -36,3 +38,5 @@
     }
   ]
 }
+
+ 
