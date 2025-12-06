@@ -26,9 +26,9 @@
     "tools": {}
   },
 
-  "tools": [
-    {
-      "name": "xsen_search",
+ "tools": [
+  {
+    "name": "search-videos", 
       "description": "Search OU Sooners video highlights and return XSEN embedded players.",
       "input_schema": {
         "type": "object",
