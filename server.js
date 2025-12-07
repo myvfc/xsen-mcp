@@ -154,18 +154,20 @@ async function handleXsenSearch(params) {
 
 app.post("/mcp", async (req, res) => {
   try {
-    const { jsonrpc, method, id, params } = req.body || {};
-
-    console.log(`🔧 MCP: ${method}`);
-
-    // ---- JSON-RPC VERSION CHECK ----
-    if (jsonrpc !== "2.0") {
-      return res.json({
+    // AUTH CHECK
+    const authHeader = req.headers.authorization;
+    const expectedAuth = `Bearer ${process.env.MCP_AUTH_KEY}`;
+    
+    if (!authHeader || authHeader !== expectedAuth) {
+      return res.status(401).json({
         jsonrpc: "2.0",
-        id,
-        error: { code: -32600, message: "Invalid JSON-RPC version" },
+        id: req.body?.id || null,
+        error: { code: -32600, message: "Unauthorized" }
       });
     }
+
+    const { jsonrpc, method, id, params } = req.body || {};
+    // ... rest of your existing code
 
     // ---- INITIALIZE ----
     if (method === "initialize") {
