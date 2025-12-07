@@ -189,6 +189,7 @@ app.post("/mcp", async (req, res) => {
   
  // ---- LIST TOOLS ----
 // ---- LIST TOOLS ----
+// ---- LIST TOOLS ----
 if (method === "tools/list") {
   return res.json({
     jsonrpc: "2.0",
@@ -197,11 +198,14 @@ if (method === "tools/list") {
       tools: [
         {
           name: "xsen_search",
-          description: "Search videos",
-          inputSchema: {  // NOTE: camelCase instead of input_schema
+          description: "Search OU Sooners video highlights and return XSEN embedded players. Use this when users request videos, highlights, or game footage.",
+          inputSchema: {  // camelCase - CRITICAL!
             type: "object",
             properties: {
-              query: { type: "string" }
+              query: {
+                type: "string",
+                description: "Search query for OU videos (e.g. 'Baker Mayfield highlights')"
+              }
             },
             required: ["query"]
           }
